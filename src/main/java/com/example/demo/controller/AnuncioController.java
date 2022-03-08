@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import java.util.Date;
 import java.util.List;
 
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,8 @@ import com.example.demo.model.*;
 import com.example.demo.repository.AnuncioRepo;
 import com.example.demo.repository.UserRepo;
 import com.example.demo.repository.ComentarioRepo;
-import com.example.demo.services.UserService;
+
+
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class AnuncioController {
@@ -100,7 +100,7 @@ public class AnuncioController {
 				usuario.setAnuncio(nuevo);
 				userRepo.save(usuario);
 				
-				return ResponseEntity.ok(HttpStatus.CREATED);
+				return ResponseEntity.status(HttpStatus.CREATED).build();
 				
 			} catch (Exception e) {
 				return ResponseEntity.badRequest().build();
@@ -109,7 +109,7 @@ public class AnuncioController {
 			
 		}
 		else {
-			return ResponseEntity.badRequest().body("Error al procesar la respuesta");
+			return ResponseEntity.badRequest().body("Falta usuario o anuncio");
 		}
 	}
 	
@@ -128,7 +128,7 @@ public class AnuncioController {
     		return ResponseEntity.badRequest().body("Faltan datos");
     	}
     	User usuario = userRepo.findByEmail(email).orElse(null);
-    	System.out.println(aux.getId());
+
 		Anuncio buscado = anuncioRepo.findById(aux.getId()).orElse(null);
 		if(buscado==null || usuario==null) {
  			return ResponseEntity.notFound().build();
@@ -189,7 +189,7 @@ public class AnuncioController {
 		}
 		}
 		
-		//ARREGLAR
+
 		
 		/**
 		 * Este metodo recibe un id de un anuncio por parametro y un comentario por RequestBody. Si el usuario existe
@@ -220,7 +220,7 @@ public class AnuncioController {
 	    		anuncio.getComentarios().add(nuevo);
 	    		anuncioRepo.save(anuncio);
 	    		
-	    		return ResponseEntity.ok(HttpStatus.CREATED);
+	    		return ResponseEntity.status(HttpStatus.CREATED).build();
 	    		
 	    	}
 		}

@@ -19,7 +19,7 @@ public class CorsConfig implements WebMvcConfigurer {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/anuncios")
 				.allowedOrigins(origen)
-				.allowedHeaders("GET");
+				.allowedHeaders("*");
 				
 				registry.addMapping("/auth/login")
 				.allowedOrigins(origen)
@@ -38,7 +38,7 @@ public class CorsConfig implements WebMvcConfigurer {
 				.allowedHeaders("*");
 				
 				
-				registry.addMapping("/anuncios")
+				registry.addMapping("/anuncio")
 				.allowedOrigins(origen)
 				.allowedHeaders("*");
 				

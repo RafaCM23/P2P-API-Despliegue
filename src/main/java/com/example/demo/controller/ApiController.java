@@ -1,8 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +12,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.*;
-import com.example.demo.repository.AnuncioRepo;
+
 import com.example.demo.repository.UserRepo;
 import com.example.demo.security.JWTUtil;
-import com.example.demo.services.UserService;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -48,21 +46,22 @@ public class ApiController {
      */
 	@PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody(required=false) User user){
-		if(user==null||user.getName()==null||user.getNickname()==null||user.getEmail()==null|| user.getPassword()==null || user.getProvincia()==null) {
+		if(user==null||user.getName()==null||user.getNickname()==null||user.getEmail()==null|| user.getPassword()==null ) {
 			return ResponseEntity.badRequest().body("Faltan datos");
 		}
     	User buscado =userRepo.findByEmail(user.getEmail()).orElse(null);
     	User buscado2 = userRepo.findByNickname(user.getNickname()).orElse(null);
-		if(buscado==null && buscado2==null) {
-        String encodedPass = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPass);
-        user = userRepo.save(user);
-        String token = jwtUtil.generateToken(user.getEmail());
-        return 
-        		ResponseEntity.ok(Collections.singletonMap("jwt-token", token));
+		if(buscado!=null) {return ResponseEntity.badRequest().body("Email Ocupado");}
+		if(buscado2!=null) {return ResponseEntity.badRequest().body("Usuario Ocupado");
 		}
 		else {
-			return ResponseEntity.badRequest().body("Usuario en uso");
+			
+			String encodedPass = passwordEncoder.encode(user.getPassword());
+	        user.setPassword(encodedPass);
+	        user = userRepo.save(user);
+	        String token = jwtUtil.generateToken(user.getEmail());
+	        return 
+	        		ResponseEntity.ok(Collections.singletonMap("jwt-token", token));
 		}
     }
 	
@@ -78,15 +77,13 @@ public class ApiController {
     	
     	if(body==null || body.getEmail()==null || body.getPassword()==null) {
     		return ResponseEntity.badRequest().body("Faltan datos");
+    		
     	}
     	User buscado =userRepo.findByEmail(body.getEmail()).orElse(null);
     	if(buscado==null) {
-    		
     		return ResponseEntity.badRequest().body("Bad Mail");
     	}
-    	//estoNoFunciona
     	if(!passwordEncoder.matches(body.getPassword(), buscado.getPassword())) {
-    	
     		return ResponseEntity.badRequest().body("Bad Password");
     	}
         try {
@@ -176,7 +173,6 @@ public class ApiController {
     	if(usuario==null || usuario.getNickname()==null) {return ResponseEntity.badRequest().body("Faltan datos");}
     	
     	User buscado = userRepo.findByNickname(usuario.getNickname()).orElse(null);
-    	System.out.println(usuario.getNickname());
     	if(buscado==null) {
     		return ResponseEntity.notFound().build();
     	}
